@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Routing\Controller;
 
 class AuthController extends Controller
 {
+    private UserRepositoryInterface $userRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function register(Request $request)
     {
         $request->validate([
@@ -18,17 +26,15 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $user = User::create([
+        $user = $this->userRepository->create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
         return response()->json([
             'user' => $user,
-            'token' => $token
+            'token' => JWTAuth::fromUser($user)
         ], 201);
     }
 
