@@ -12,4 +12,5 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::apiResource('meetings', MeetingController::class);
+    Route::get('/users', [AuthController::class, 'users']);
 });

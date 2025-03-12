@@ -17,7 +17,7 @@ class MeetingController extends Controller
 
     public function index()
     {
-        return response()->json($this->meetingRepository->all());
+        return response()->json($this->meetingRepository->findAll(auth()->id()));
     }
 
     public function store(Request $request)

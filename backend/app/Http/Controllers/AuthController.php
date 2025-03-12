@@ -18,6 +18,11 @@ class AuthController extends Controller
         $this->userRepository = $userRepository;
     }
 
+    public function users()
+    {
+        return response()->json($this->userRepository->all());
+    }
+
     public function register(Request $request)
     {
         $request->validate([
