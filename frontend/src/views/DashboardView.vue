@@ -1,13 +1,7 @@
-<template>
-    <div>
-        <h1>Bem-vindo ao Dashboard, {{ authStore.user?.name }}!</h1>
-        <button @click="handleLogout">Sair</button>
-    </div>
-</template>
-
 <script setup>
 import { useAuthStore } from "../store/auth";
 import { useRouter } from "vue-router";
+import BaseLayout from "../components/BaseLayout.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -18,13 +12,9 @@ const handleLogout = () => {
 };
 </script>
 
-<style scoped>
-h1 {
-    color: #333;
-}
-button {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    cursor: pointer;
-}
-</style>
+<template>
+  <BaseLayout>
+    <h1 class="text-3xl font-bold text-gray-700">Dashboard</h1>
+    <p class="text-gray-600">Bem-vindo, <span class="font-bold">{{ authStore.user?.name }}</span>!</p>
+  </BaseLayout>
+</template>
