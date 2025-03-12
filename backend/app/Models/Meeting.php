@@ -9,10 +9,15 @@ class Meeting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['customer_id', 'scheduled_at', 'notes'];
+    protected $fillable = ['user_id', 'invited_user_id', 'scheduled_at', 'notes'];
 
-    public function customer()
+    public function user()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function invitedUser()
+    {
+        return $this->belongsTo(User::class, 'invited_user_id');
     }
 }

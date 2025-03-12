@@ -17,25 +17,26 @@ class MeetingController extends Controller
 
     public function index()
     {
-        return response()->json(Meeting::with('customer')->get());
+        return response()->json($this->meetingRepository->all());
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'user_id' => 'required|exists:users,id',
+            'invited_user_id' => 'required|exists:users,id',
             'scheduled_at' => 'required|date',
             'notes' => 'nullable|string',
         ]);
 
-        $meeting = Meeting::create($request->all());
+        $meeting = $this->meetingRepository->create($request->all());
 
         return response()->json($meeting, 201);
     }
 
     public function show($id)
     {
-        $meeting = Meeting::with('customer')->find($id);
+        $meeting = $this->meetingRepository->find($id);
         if (!$meeting) {
             return response()->json(['message' => 'Reunião não encontrada'], 404);
         }
@@ -45,30 +46,31 @@ class MeetingController extends Controller
 
     public function update(Request $request, $id)
     {
-        $meeting = Meeting::find($id);
+        $meeting = $this->meetingRepository->find($id);
         if (!$meeting) {
             return response()->json(['message' => 'Reunião não encontrada'], 404);
         }
 
         $request->validate([
-            'customer_id' => 'sometimes|exists:customers,id',
+            'user_id' => 'required|exists:users,id',
+            'invited_user_id' => 'required|exists:users,id',
             'scheduled_at' => 'sometimes|date',
             'notes' => 'nullable|string',
         ]);
 
-        $meeting->update($request->all());
+        $meeting = $this->meetingRepository->update($id, $request->all());
 
         return response()->json($meeting);
     }
 
     public function destroy($id)
     {
-        $meeting = Meeting::find($id);
+        $meeting = $this->meetingRepository->find($id);
         if (!$meeting) {
             return response()->json(['message' => 'Reunião não encontrada'], 404);
         }
 
-        $meeting->delete();
+        $this->meetingRepository->delete($id);
 
         return response()->json(['message' => 'Reunião excluída com sucesso']);
     }

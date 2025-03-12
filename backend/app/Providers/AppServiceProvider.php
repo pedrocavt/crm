@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Repositories\Customer\CustomerRepository;
-use App\Repositories\Customer\CustomerRepositoryInterface;
 use App\Repositories\Meeting\MeetingRepository;
 use App\Repositories\Meeting\MeetingRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -18,7 +16,6 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
-        $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
         $this->app->bind(MeetingRepositoryInterface::class, MeetingRepository::class);
     }
 
