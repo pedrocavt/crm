@@ -28,7 +28,18 @@ export const useAuthStore = defineStore("auth", {
                 throw error;
             }
         },
-        logout() {
+        async logout() {
+            try {
+                await api.post("/logout")
+            } catch (error) {
+                console.error("Erro ao deslogar no backend:", error);
+            }
+
+            if (window.Echo) {
+                console.log("🔌 Desconectando do Pusher...");
+                window.Echo.disconnect();
+            }
+
             this.user = null;
             this.token = null;
             localStorage.removeItem("user");

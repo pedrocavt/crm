@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\User\UserRepositoryInterface;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Routing\Controller;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Broadcast;
+use App\Repositories\User\UserRepositoryInterface;
 
 class AuthController extends Controller
 {
@@ -77,5 +79,27 @@ class AuthController extends Controller
             'user' => Auth::user(),
             'token' => Auth::refresh()
         ]);
+    }
+
+    public function broadcastingLogin(Request $request)
+    {
+        try {
+            // Pega o token do cabeçalho da requisição
+            $token = $request->header('Authorization');
+    
+            // Remove "Bearer " para pegar apenas o token puro
+            $token = str_replace('Bearer ', '', $token);
+    
+            // Autentica o usuário pelo token JWT
+            $user = JWTAuth::parseToken()->authenticate();
+    
+            if (!$user) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+    
+            return Broadcast::auth($request);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
     }
 }

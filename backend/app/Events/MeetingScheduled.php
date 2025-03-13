@@ -3,7 +3,6 @@
 namespace App\Events;
 
 use App\Models\Meeting;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -14,10 +13,13 @@ class MeetingScheduled implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Meeting $meeting;
+    public $meeting;
 
     public function __construct(Meeting $meeting)
     {
+        $meeting->load('invitedUser', 'invitedUser');
+        $meeting->load('user', 'user');
+
         $this->meeting = $meeting;
     }
 
@@ -25,12 +27,12 @@ class MeetingScheduled implements ShouldBroadcastNow
     {
         return [
             new PrivateChannel('users.' . $this->meeting->user_id),
-            new PrivateChannel('users.' . $this->meeting->invited_user_id)
+            new PrivateChannel('users.' . $this->meeting->invited_user_id),
         ];
     }
 
     public function broadcastAs()
     {
-        return 'meeting.scheduled';
+        return 'meeting.created';
     }
 }

@@ -18,6 +18,11 @@
 
       <!-- Conteúdo Principal -->
       <main class="flex-1 p-6">
+        <div v-if="notifications.length" class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700">
+          <p v-for="(notification, index) in notifications" :key="index">
+            {{ notification }}
+          </p>
+        </div>
         <h1 class="text-3xl font-bold text-gray-700 mb-6">Minhas Reuniões</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -69,11 +74,14 @@ import BaseLayout from "../components/BaseLayout.vue";
 import { useAuthStore } from "../store/auth";
 import { meetingService } from "../services/meetingService";
 import { userService } from "../services/userService";
+import echo from "../services/pusherService";
+
 
 const authStore = useAuthStore();
 const meetings = ref([]);
 const users = ref([]);
 const selectedUser = ref(null);
+const notifications = ref([]);
 
 const newMeeting = ref({
   user_id: authStore.user?.id || "",
@@ -82,7 +90,6 @@ const newMeeting = ref({
   notes: "",
 });
 
-// Buscar reuniões do usuário logado
 const fetchMeetings = async () => {
   try {
     meetings.value = await meetingService.getMeetings();
@@ -91,7 +98,6 @@ const fetchMeetings = async () => {
   }
 };
 
-// Buscar usuários para agendamento de reuniões
 const fetchUsers = async () => {
   try {
     const data = await userService.getUsers();
@@ -101,7 +107,6 @@ const fetchUsers = async () => {
   }
 };
 
-// Selecionar usuário para marcar reunião
 const selectUser = (user) => {
   selectedUser.value = user;
   newMeeting.value.invited_user_id = user.id;
@@ -135,6 +140,39 @@ const deleteMeeting = async (id) => {
   }
 };
 
+const listenForMeetings = () => {
+  const channel = echo.private(`users.${authStore.user.id}`);
+
+  console.log("🎧 Escutando no canal:", `users.${authStore.user.id}`);
+
+  channel.subscribed(() => {
+    console.log("✅ Inscrito com sucesso no canal:", `users.${authStore.user.id}`);
+  });
+
+  channel.listen(".meeting.created", (data) => { 
+    console.log("🔥 Nova reunião recebida no frontend:", data);
+
+    let notificationMessage = "";
+
+    if (data.meeting.user_id === authStore.user.id) {
+      // 🔥 Se o usuário for o dono da reunião data.meeting.invited_user?.name || "convidado"}
+      notificationMessage = `Você marcou uma reunião com ${data.meeting.invited_user?.name || "alguém"}`;
+    } else if (data.meeting.invited_user_id === authStore.user.id) {
+      // 🔥 Se o usuário for o convidado
+      notificationMessage = `Nova reunião com ${data.meeting.user?.name || "convidado"}`;
+    }
+
+    notifications.value.push(notificationMessage);
+    console.log("📌 Atualizando notifications:", notifications.value);
+
+    fetchMeetings(); // Atualiza a lista de reuniões
+  });
+
+  channel.error((error) => {
+    console.error("❌ Erro ao conectar ao canal Pusher:", error);
+  });
+};
+
 // Formatar data e hora
 const formatDate = (dateTime) => {
   return new Date(dateTime).toLocaleString("pt-BR");
@@ -144,5 +182,6 @@ const formatDate = (dateTime) => {
 onMounted(() => {
   fetchMeetings();
   fetchUsers();
+  listenForMeetings();
 });
 </script>
