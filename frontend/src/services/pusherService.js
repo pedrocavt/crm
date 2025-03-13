@@ -13,7 +13,7 @@ const echo = new Echo({
     authEndpoint: "http://localhost:8000/api/broadcasting/auth",
     auth: {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`, // 🔥 Pega sempre o token atualizado
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
             Accept: "application/json",
         },
     },

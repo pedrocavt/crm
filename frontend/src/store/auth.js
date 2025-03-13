@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import api from "../services/api";
+import router from "../router";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -36,7 +37,6 @@ export const useAuthStore = defineStore("auth", {
             }
 
             if (window.Echo) {
-                console.log("🔌 Desconectando do Pusher...");
                 window.Echo.disconnect();
             }
 
@@ -46,6 +46,8 @@ export const useAuthStore = defineStore("auth", {
             localStorage.removeItem("token");
 
             delete api.defaults.headers.common["Authorization"];
+            console.log('aaa');
+            router.push("/login");
         },
     },
 });
