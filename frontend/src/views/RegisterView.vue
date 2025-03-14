@@ -22,6 +22,7 @@ const handleRegister = async () => {
         });
         router.push("/dashboard");
     } catch (error) {
+        console.log(error);
         errorMessage.value = "Erro ao criar conta.";
     }
 };

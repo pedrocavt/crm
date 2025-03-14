@@ -29,6 +29,29 @@ export const useAuthStore = defineStore("auth", {
                 throw error;
             }
         },
+
+        async register(dataRegister) {
+            try {
+                const response = await api.post("/register", dataRegister);
+                const { data } = response;
+
+                if (!data.user || !data.token) {
+                    throw new Error("Resposta inesperada da API");
+                }
+
+                this.user = data.user;
+                this.token = data.token;
+
+                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("token", data.token);
+
+                api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+            } catch (error) {
+                console.error("Erro no registro:", error);
+                throw error;
+            }
+        },
+
         async logout() {
             try {
                 await api.post("/logout")

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\CreateUserRequest;
+use App\Http\Requests\User\LoginRequest;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -10,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Broadcast;
 use App\Repositories\User\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\Casts\Json;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -20,19 +24,13 @@ class AuthController extends Controller
         $this->userRepository = $userRepository;
     }
 
-    public function users()
+    public function users(): JsonResponse
     {
         return response()->json($this->userRepository->all());
     }
 
-    public function register(Request $request)
+    public function register(CreateUserRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
         $user = $this->userRepository->create([
             'name' => $request->name,
             'email' => $request->email,
@@ -45,14 +43,9 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request): JsonResponse
     {
-        $credentials = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-
-        if (!$token = JWTAuth::attempt($credentials)) {
+        if (!$token = JWTAuth::attempt($request->only('email', 'password'))) {
             return response()->json(['error' => 'Credenciais inválidas'], 401);
         }
 
@@ -62,18 +55,13 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
         Auth::logout();
         return response()->json(['message' => 'Logout realizado com sucesso.']);
     }
 
-    public function me()
-    {
-        return response()->json(Auth::user());
-    }
-
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         return response()->json([
             'user' => Auth::user(),
@@ -81,16 +69,12 @@ class AuthController extends Controller
         ]);
     }
 
-    public function broadcastingLogin(Request $request)
+    public function broadcastingLogin(Request $request): mixed
     {
         try {
-            // Pega o token do cabeçalho da requisição
             $token = $request->header('Authorization');
-    
-            // Remove "Bearer " para pegar apenas o token puro
             $token = str_replace('Bearer ', '', $token);
     
-            // Autentica o usuário pelo token JWT
             $user = JWTAuth::parseToken()->authenticate();
     
             if (!$user) {
