@@ -23,19 +23,21 @@
             {{ notification }}
           </p>
         </div>
+
         <h1 class="text-3xl font-bold text-gray-700 mb-6">Minhas Reuniões</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="meeting in meetings" :key="meeting.id" class="bg-white p-6 rounded-lg shadow-md">
+          <div
+            v-for="meeting in meetings"
+            :key="meeting.id"
+            class="bg-white p-6 rounded-lg shadow-md cursor-pointer"
+            @click="editMeeting(meeting)" 
+          >
             <h3 class="text-lg font-bold text-gray-700">{{ formatDate(meeting.scheduled_at) }}</h3>
-            <p class="text-gray-600">
-              <strong>Organizador:</strong> {{ meeting.user?.name || "Não informado" }}
-            </p>
-            <p class="text-gray-600">
-              <strong>Convidado:</strong> {{ meeting.invited_user?.name || "Não informado" }}
-            </p>
+            <p class="text-gray-600"><strong>Organizador:</strong> {{ meeting.user?.name || "Não informado" }}</p>
+            <p class="text-gray-600"><strong>Convidado:</strong> {{ meeting.invited_user?.name || "Não informado" }}</p>
             <p class="text-gray-600">{{ meeting.notes }}</p>
-            <button @click="deleteMeeting(meeting.id)" class="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+            <button @click.stop="deleteMeeting(meeting.id)" class="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
               Excluir
             </button>
           </div>
@@ -43,11 +45,11 @@
       </main>
     </div>
 
-    <!-- Modal de Confirmação -->
-    <div v-if="selectedUser" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div v-if="selectedUser || isEditing" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded-lg shadow-lg max-w-md">
-        <h2 class="text-lg font-bold text-gray-700 mb-4">Agendar Reunião</h2>
-        <p class="text-gray-600">Você deseja marcar uma reunião com <strong>{{ selectedUser.name }}</strong>?</p>
+        <h2 class="text-lg font-bold text-gray-700 mb-4">{{ isEditing ? "Editar Reunião" : "Agendar Reunião" }}</h2>
+
+        <p v-if="!isEditing" class="text-gray-600">Você deseja marcar uma reunião com <strong>{{ selectedUser?.name }}</strong>?</p>
         
         <label class="block text-gray-700 text-sm font-bold mt-4">Data e Hora</label>
         <input v-model="newMeeting.scheduled_at" type="datetime-local" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required />
@@ -56,10 +58,10 @@
         <textarea v-model="newMeeting.notes" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
 
         <div class="mt-6 flex justify-between">
-          <button @click="createMeeting" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-            Confirmar
+          <button @click="saveMeeting" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+            {{ isEditing ? "Salvar Alterações" : "Confirmar" }}
           </button>
-          <button @click="selectedUser = null" class="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500">
+          <button @click="closeModal" class="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500">
             Cancelar
           </button>
         </div>
@@ -82,8 +84,11 @@ const meetings = ref([]);
 const users = ref([]);
 const selectedUser = ref(null);
 const notifications = ref([]);
+const isEditing = ref(false);
+
 
 const newMeeting = ref({
+  id: null,
   user_id: authStore.user?.id || "",
   invited_user_id: "",
   scheduled_at: "",
@@ -113,21 +118,46 @@ const selectUser = (user) => {
 };
 
 // Criar reunião
-const createMeeting = async () => {
+const saveMeeting = async () => {
   try {
-    await meetingService.createMeeting({
-      user_id: authStore.user.id,
-      invited_user_id: newMeeting.value.invited_user_id,
-      scheduled_at: newMeeting.value.scheduled_at,
-      notes: newMeeting.value.notes,
-    });
+    if (isEditing.value) {
+      await meetingService.updateMeeting(newMeeting.value.id, {
+        scheduled_at: newMeeting.value.scheduled_at,
+        notes: newMeeting.value.notes,
+      });
+    } else {
+      await meetingService.createMeeting({
+        user_id: authStore.user.id,
+        invited_user_id: newMeeting.value.invited_user_id,
+        scheduled_at: newMeeting.value.scheduled_at,
+        notes: newMeeting.value.notes,
+      });
+    }
 
     fetchMeetings();
-    selectedUser.value = null;
-    newMeeting.value = { user_id: authStore.user.id, invited_user_id: "", scheduled_at: "", notes: "" };
+    closeModal();
   } catch (error) {
-    console.error("Erro ao criar reunião");
+    console.error("Erro ao salvar reunião:", error);
   }
+};
+
+// 🆕 Fechar Modal
+const closeModal = () => {
+  selectedUser.value = null;
+  isEditing.value = false;
+  newMeeting.value = { id: null, user_id: authStore.user.id, invited_user_id: "", scheduled_at: "", notes: "" };
+};
+
+// 🆕 Editar Reunião
+const editMeeting = (meeting) => {
+  isEditing.value = true;
+  newMeeting.value = {
+    id: meeting.id,
+    user_id: meeting.user_id,
+    invited_user_id: meeting.invited_user_id,
+    scheduled_at: meeting.scheduled_at,
+    notes: meeting.notes,
+  };
 };
 
 // Excluir reunião

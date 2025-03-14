@@ -44,7 +44,7 @@ class MeetingController extends Controller
         return response()->json($meeting);
     }
 
-    public function update(Request $request, $id)
+    public function update($id, Request $request)
     {
         $meeting = $this->meetingRepository->find($id);
         if (!$meeting) {
@@ -52,8 +52,6 @@ class MeetingController extends Controller
         }
 
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'invited_user_id' => 'required|exists:users,id',
             'scheduled_at' => 'sometimes|date',
             'notes' => 'nullable|string',
         ]);
