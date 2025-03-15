@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Event;
 
 use Tests\TestCase;
 use App\Models\User;

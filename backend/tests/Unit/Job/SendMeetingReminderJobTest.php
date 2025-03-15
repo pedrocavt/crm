@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Job;
 
 use Tests\TestCase;
 use App\Jobs\SendMeetingReminderJob;
