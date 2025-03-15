@@ -18,12 +18,6 @@
 
       <!-- Conteúdo Principal -->
       <main class="flex-1 p-6">
-        <div v-if="notifications.length" class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700">
-          <p v-for="(notification, index) in notifications" :key="index">
-            {{ notification }}
-          </p>
-        </div>
-
         <h1 class="text-3xl font-bold text-gray-700 mb-6">Minhas Reuniões</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -77,14 +71,16 @@ import { useAuthStore } from "../store/auth";
 import { meetingService } from "../services/meetingService";
 import { userService } from "../services/userService";
 import echo from "../services/pusherService";
+import { useToast } from "vue-toastification";
+
 
 
 const authStore = useAuthStore();
 const meetings = ref([]);
 const users = ref([]);
 const selectedUser = ref(null);
-const notifications = ref([]);
 const isEditing = ref(false);
+const toast = useToast();
 
 
 const newMeeting = ref({
@@ -192,8 +188,13 @@ const listenForMeetings = () => {
       notificationMessage = `Nova reunião com ${data.meeting.user?.name || "convidado"}`;
     }
 
-    notifications.value.push(notificationMessage);
-    console.log("📌 Atualizando notifications:", notifications.value);
+    // ✅ Exibir notificação moderna no toast
+    toast.success(notificationMessage, {
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnHover: true,
+      position: "top-right",
+    });
 
     fetchMeetings(); // Atualiza a lista de reuniões
   });
@@ -202,6 +203,45 @@ const listenForMeetings = () => {
     console.error("❌ Erro ao conectar ao canal Pusher:", error);
   });
 };
+
+const listenForMeetingReminders = () => {
+    const channel = echo.private(`users.${authStore.user.id}`);
+
+    channel.listen(".meeting.reminder", (data) => {
+        console.log("de reunião recebido:", data);
+
+        const meetingInfo = data.meeting;
+        const notificationMessage = `⏰ Lembrete: Você tem uma reunião com ${meetingInfo.user.name} em breve!`;
+        
+        toast.info(notificationMessage, {
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnHover: true,
+            position: "top-right",
+        });
+    });
+};
+
+const listenForMeetingDeleteds = () => {
+        const channel = echo.private(`users.${authStore.user.id}`);
+        
+        channel.listen(".meeting.deleted", (data) => {
+          
+          let name = data.meeting.user_id === authStore.user.id ? data.meeting.invited_user?.name : data.meeting.user?.name;
+          const notificationMessage = `Aviso: Sua reunião com ${name} foi cancelada!`;
+
+        toast.error(notificationMessage, {
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnHover: true,
+            position: "top-right",
+        });
+
+      fetchMeetings();
+    });
+};
+      
+
 
 // Formatar data e hora
 const formatDate = (dateTime) => {
@@ -213,5 +253,7 @@ onMounted(() => {
   fetchMeetings();
   fetchUsers();
   listenForMeetings();
+  listenForMeetingReminders();
+  listenForMeetingDeleteds();
 });
 </script>

@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Meeting;
 
+use App\Events\MeetingDeletedScheduled;
 use App\Models\Meeting;
 use App\Events\MeetingScheduled;
 use Illuminate\Support\Collection;
@@ -34,6 +35,21 @@ class MeetingRepository extends AbstractEloquentRepository implements MeetingRep
         
         return $meetings;
         
+    }
+
+    public function delete(int $id): bool
+    {
+        $meeting = $this->model::with(['user:id,name', 'invitedUser:id,name'])
+            ->find($id);
+
+        $deleted = $this->model->where('id', $id)->delete();
+
+        if ($deleted) {
+            event(new MeetingDeletedScheduled($meeting));
+            return true;
+        }
+
+        return false;
     }
 
 }
