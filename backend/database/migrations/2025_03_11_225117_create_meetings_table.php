@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('invited_user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->dateTime('scheduled_at');
+            $table->boolean('reminder_sent')->default(false);
             $table->text('notes')->nullable();
             $table->timestamps();
         });

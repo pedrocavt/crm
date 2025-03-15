@@ -21,9 +21,14 @@ class SendMeetingReminderJob implements ShouldQueue
         $start = $now->copy();
         $end = $now->copy()->addMinutes(5);
         
-        $meetings = Meeting::whereBetween('scheduled_at', [$start, $end])->get();
+        $meetings = Meeting::whereBetween('scheduled_at', [$start, $end])
+            ->where('reminder_sent', false)
+            ->get();
+
         foreach ($meetings as $meeting) {
             event(new MeetingReminderEvent($meeting));
+            $meeting->reminder_sent = true;
+            $meeting->update();
         }
     }
 }
