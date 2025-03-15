@@ -19,14 +19,12 @@ class MeetingControllerTest extends TestCase
     {
         parent::setUp();
 
-        // Criar um usuário autenticado
         $this->user = User::factory()->create();
         $token = JWTAuth::fromUser($this->user);
         $this->headers = ['Authorization' => "Bearer $token"];
     }
 
-    /** @test */
-    public function it_can_create_a_meeting()
+    public function test_can_create_a_meeting()
     {
         $data = [
             'user_id' => $this->user->id,
@@ -41,8 +39,7 @@ class MeetingControllerTest extends TestCase
         $this->assertDatabaseHas('meetings', $data);
     }
 
-    /** @test */
-    public function it_can_list_meetings()
+    public function test_can_list_meetings()
     {
         Meeting::factory()->count(3)->create(['user_id' => $this->user->id]);
 
@@ -52,8 +49,7 @@ class MeetingControllerTest extends TestCase
                  ->assertJsonCount(3);
     }
 
-    /** @test */
-    public function it_can_show_a_meeting()
+    public function test_can_show_a_meeting()
     {
         $meeting = Meeting::factory()->create(['user_id' => $this->user->id]);
 
@@ -63,8 +59,7 @@ class MeetingControllerTest extends TestCase
                  ->assertJsonFragment(['id' => $meeting->id]);
     }
 
-    /** @test */
-    public function it_can_update_a_meeting()
+    public function test_can_update_a_meeting()
     {
         $meeting = Meeting::factory()->create(['user_id' => $this->user->id]);
         $updateData = ['notes' => 'Nova nota de teste'];
@@ -75,8 +70,7 @@ class MeetingControllerTest extends TestCase
         $this->assertDatabaseHas('meetings', ['id' => $meeting->id, 'notes' => 'Nova nota de teste']);
     }
 
-    /** @test */
-    public function it_can_delete_a_meeting()
+    public function test_can_delete_a_meeting()
     {
         $meeting = Meeting::factory()->create(['user_id' => $this->user->id]);
 

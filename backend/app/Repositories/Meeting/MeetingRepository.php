@@ -2,9 +2,9 @@
 
 namespace App\Repositories\Meeting;
 
-use App\Events\MeetingDeletedScheduled;
+use App\Events\MeetingDeletedEvent;
 use App\Models\Meeting;
-use App\Events\MeetingScheduled;
+use App\Events\MeetingCreatedEvent;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\AbstractEloquentRepository;
@@ -20,7 +20,7 @@ class MeetingRepository extends AbstractEloquentRepository implements MeetingRep
     {
         $meeting = parent::create($data);
 
-        event(new MeetingScheduled($meeting));
+        event(new MeetingCreatedEvent($meeting));
 
         return $meeting;
     }
@@ -45,7 +45,7 @@ class MeetingRepository extends AbstractEloquentRepository implements MeetingRep
         $deleted = $this->model->where('id', $id)->delete();
 
         if ($deleted) {
-            event(new MeetingDeletedScheduled($meeting));
+            event(new MeetingDeletedEvent($meeting));
             return true;
         }
 
