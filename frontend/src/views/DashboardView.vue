@@ -151,7 +151,7 @@ const listenForMeetingReminders = () => {
             timeout: 5000,
             closeOnClick: true,
             pauseOnHover: true,
-            position: "top-right",
+            position: "top-right"//teste,
         });
     });
 };
