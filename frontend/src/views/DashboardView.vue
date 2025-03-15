@@ -144,8 +144,8 @@ const listenForMeetingReminders = () => {
     channel.listen(".meeting.reminder", (data) => {
         console.log("de reunião recebido:", data);
 
-        const meetingInfo = data.meeting;
-        const notificationMessage = `⏰ Lembrete: Você tem uma reunião com ${meetingInfo.user.name} em breve!`;
+        let name = data.meeting.user_id === authStore.user.id ? data.meeting.invited_user?.name : data.meeting.user?.name;
+        const notificationMessage = `⏰ Lembrete: Você tem uma reunião com ${name} em breve!`;
         
         toast.info(notificationMessage, {
             timeout: 5000,
