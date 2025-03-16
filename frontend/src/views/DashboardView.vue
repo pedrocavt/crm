@@ -171,7 +171,7 @@ onMounted(() => {
 <template>
   <BaseLayout>
     <div class="flex h-screen">
-      <aside class="w-64 bg-blue-500 text-white p-6">
+      <aside class="w-64 bg-[rgb(25,58,113)] text-white p-6">
         <h2 class="text-lg font-bold mb-4">Usuários</h2>
         <ul>
           <li

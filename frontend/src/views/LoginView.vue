@@ -33,7 +33,7 @@
             <label class="block text-gray-700 text-sm font-bold mb-2">Senha</label>
             <input v-model="password" type="password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required />
           </div>
-          <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+          <button type="submit" class="w-full bg-[rgb(25,58,113)] text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200">
             Entrar
           </button>
         </form>

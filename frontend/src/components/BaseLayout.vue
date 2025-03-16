@@ -10,7 +10,7 @@ authStore.logout();
 
 <template>
     <div v-if="authStore.user" class="min-h-screen bg-gray-100 flex flex-col">
-        <header class="bg-blue-500 text-white py-4 px-6 flex justify-between items-center">
+        <header class="bg-[rgb(25,58,113)] text-white py-4 px-6 flex justify-between items-center">
         <h1 class="text-lg font-bold">Bem vindo, {{authStore.user.name}}</h1>
         <nav class="space-x-4">
             <router-link to="/dashboard" class="hover:underline">Dashboard</router-link>
