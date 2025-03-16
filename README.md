@@ -58,3 +58,10 @@ cd crm-ricochet
 ```bash
 chmod +x instal.sh
 ./install.sh
+```
+
+### Apresentação [VIDEOS]
+- [Instalação](https://drive.google.com/file/d/17IoaskHG209nP06xHOrth6R2WAQl89I1/view?usp=drive_link)
+- [Aplicação](https://drive.google.com/file/d/1vXNqdG5gZMTvnXM3UowrvsqZs4EPdG1-/view?usp=drive_link)
+- [Backend (Parte1)](https://drive.google.com/file/d/1oGkjSNdIOmHNGrjpmQw0hmcKMWJW63fp/view?usp=drive_link)
+- [Backend (Parte2)](https://drive.google.com/file/d/1oGkjSNdIOmHNGrjpmQw0hmcKMWJW63fp/view?usp=sharing)
