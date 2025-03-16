@@ -7,15 +7,12 @@ import { userService } from "../services/userService";
 import echo from "../services/pusherService";
 import { useToast } from "vue-toastification";
 
-
-
 const authStore = useAuthStore();
 const meetings = ref([]);
 const users = ref([]);
 const selectedUser = ref(null);
 const isEditing = ref(false);
 const toast = useToast();
-
 
 const newMeeting = ref({
   id: null,
@@ -47,7 +44,6 @@ const selectUser = (user) => {
   newMeeting.value.invited_user_id = user.id;
 };
 
-// Criar reunião
 const saveMeeting = async () => {
   try {
     if (isEditing.value) {
@@ -71,14 +67,12 @@ const saveMeeting = async () => {
   }
 };
 
-// 🆕 Fechar Modal
 const closeModal = () => {
   selectedUser.value = null;
   isEditing.value = false;
   newMeeting.value = { id: null, user_id: authStore.user.id, invited_user_id: "", scheduled_at: "", notes: "" };
 };
 
-// 🆕 Editar Reunião
 const editMeeting = (meeting) => {
   isEditing.value = true;
   newMeeting.value = {
@@ -90,7 +84,6 @@ const editMeeting = (meeting) => {
   };
 };
 
-// Excluir reunião
 const deleteMeeting = async (id) => {
   try {
     await meetingService.deleteMeeting(id);
@@ -103,26 +96,15 @@ const deleteMeeting = async (id) => {
 const listenForMeetings = () => {
   const channel = echo.private(`users.${authStore.user.id}`);
 
-  console.log("🎧 Escutando no canal:", `users.${authStore.user.id}`);
-
-  channel.subscribed(() => {
-    console.log("✅ Inscrito com sucesso no canal:", `users.${authStore.user.id}`);
-  });
-
   channel.listen(".meeting.created", (data) => { 
-    console.log("🔥 Nova reunião recebida no frontend:", data);
-
     let notificationMessage = "";
 
     if (data.meeting.user_id === authStore.user.id) {
-      // 🔥 Se o usuário for o dono da reunião data.meeting.invited_user?.name || "convidado"}
       notificationMessage = `Você marcou uma reunião com ${data.meeting.invited_user?.name || "alguém"}`;
     } else if (data.meeting.invited_user_id === authStore.user.id) {
-      // 🔥 Se o usuário for o convidado
       notificationMessage = `Nova reunião com ${data.meeting.user?.name || "convidado"}`;
     }
 
-    // ✅ Exibir notificação moderna no toast
     toast.success(notificationMessage, {
       timeout: 5000,
       closeOnClick: true,
@@ -130,11 +112,11 @@ const listenForMeetings = () => {
       position: "top-right",
     });
 
-    fetchMeetings(); // Atualiza a lista de reuniões
+    fetchMeetings();
   });
 
   channel.error((error) => {
-    console.error("❌ Erro ao conectar ao canal Pusher:", error);
+    console.error("Erro to connect channel pusher:", error);
   });
 };
 
@@ -142,8 +124,6 @@ const listenForMeetingReminders = () => {
     const channel = echo.private(`users.${authStore.user.id}`);
 
     channel.listen(".meeting.reminder", (data) => {
-        console.log("de reunião recebido:", data);
-
         let name = data.meeting.user_id === authStore.user.id ? data.meeting.invited_user?.name : data.meeting.user?.name;
         const notificationMessage = `⏰ Lembrete: Você tem uma reunião com ${name} em breve!`;
         
@@ -175,14 +155,10 @@ const listenForMeetingDeleteds = () => {
     });
 };
       
-
-
-// Formatar data e hora
 const formatDate = (dateTime) => {
   return new Date(dateTime).toLocaleString("pt-BR");
 };
 
-// Buscar dados ao carregar a página
 onMounted(() => {
   fetchMeetings();
   fetchUsers();
@@ -195,7 +171,6 @@ onMounted(() => {
 <template>
   <BaseLayout>
     <div class="flex h-screen">
-      <!-- Sidebar -->
       <aside class="w-64 bg-blue-500 text-white p-6">
         <h2 class="text-lg font-bold mb-4">Usuários</h2>
         <ul>
@@ -210,7 +185,6 @@ onMounted(() => {
         </ul>
       </aside>
 
-      <!-- Conteúdo Principal -->
       <main class="flex-1 p-6">
         <h1 class="text-3xl font-bold text-gray-700 mb-6">Minhas Reuniões</h1>
 
