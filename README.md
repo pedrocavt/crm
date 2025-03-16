@@ -50,8 +50,8 @@ Antes de começar, certifique-se de ter instalado:
 
 ### **📌 1. Clonar o repositório**
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio 
+git clone https://github.com/pedrocavt/crm-ricochet.git
+cd crm-ricochet 
 ```
 
 ### **📌 2. Rodar script de instalação**
