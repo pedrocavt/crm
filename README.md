@@ -7,7 +7,7 @@ Este é um **CRM simples para agendamento de reuniões**, desenvolvido utilizand
 ## 📂 **Estrutura do Projeto**
 
 O projeto está organizado da seguinte forma:
-
+```
 crm-ricochet/
 │── backend/             # Código fonte do backend (Laravel)
 │── frontend/            # Código fonte do frontend (Vue.js)
@@ -15,7 +15,7 @@ crm-ricochet/
 │── docker-compose.yml   # Arquivo de configuração do Docker Compose
 │── install.sh           # Script para instalação e configuração do projeto
 │── README.md            # Documentação do projeto
-
+```
 ---
 
 ## 🛠 **Tecnologias Utilizadas**
@@ -51,4 +51,10 @@ Antes de começar, certifique-se de ter instalado:
 ### **📌 1. Clonar o repositório**
 ```bash
 git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio  
+cd seu-repositorio 
+```
+
+### **📌 2. Rodar script de instalação**
+```bash
+chmod +x instal.sh
+./install.sh
