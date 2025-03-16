@@ -60,6 +60,13 @@ chmod +x instal.sh
 ./install.sh
 ```
 
+### Tests [PHPUNIT]
+```bash
+docker exec -it crm_app php artisan test
+```
+![image](https://github.com/user-attachments/assets/67731fd0-37dc-4db2-addd-761df791cea3)
+
+
 ### Apresentação [VIDEOS]
 - [Instalação](https://drive.google.com/file/d/17IoaskHG209nP06xHOrth6R2WAQl89I1/view?usp=drive_link)
 - [Aplicação](https://drive.google.com/file/d/1vXNqdG5gZMTvnXM3UowrvsqZs4EPdG1-/view?usp=drive_link)
