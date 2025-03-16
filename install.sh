@@ -12,10 +12,10 @@ docker-compose up -d --build \
 && docker exec crm_app php artisan key:generate 
 
 # Aguarda até que o MySQL esteja pronto antes de rodar migrations
-echo "⏳ Aguardando MySQL iniciar..."
+echo "Aguardando MySQL iniciar..."
 until docker exec crm_app php -r "new PDO('mysql:host=db;dbname=call_db', 'root', 'root');" >/dev/null 2>&1; do
   sleep 2
-  echo "⏳ Ainda aguardando o MySQL..."
+  echo "Ainda aguardando o MySQL..."
 done
 echo "✅ MySQL está pronto!"
 
