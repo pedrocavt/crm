@@ -1,0 +1,15 @@
+{
+    "services": {
+      "app": {
+        "build": {
+          "dockerfile": "docker/backend/Dockerfile"
+        }
+      },
+      "frontend": {
+        "build": {
+          "dockerfile": "docker/frontend/Dockerfile"
+        }
+      }
+    }
+}
+  
