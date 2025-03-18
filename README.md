@@ -67,10 +67,4 @@ docker exec -it crm_app php artisan test
 ![image](https://github.com/user-attachments/assets/67731fd0-37dc-4db2-addd-761df791cea3)
 
 
-### Apresentação [VIDEOS]
-- [Instalação](https://drive.google.com/file/d/17IoaskHG209nP06xHOrth6R2WAQl89I1/view?usp=drive_link)
-- [Aplicação](https://drive.google.com/file/d/1vXNqdG5gZMTvnXM3UowrvsqZs4EPdG1-/view?usp=drive_link)
-- [Backend (Parte1)](https://drive.google.com/file/d/1oGkjSNdIOmHNGrjpmQw0hmcKMWJW63fp/view?usp=drive_link)
-- [Backend (Parte2)](https://drive.google.com/file/d/1oGkjSNdIOmHNGrjpmQw0hmcKMWJW63fp/view?usp=sharing)
-- [Frontend (Parte1)](https://drive.google.com/file/d/1yyyZ8ZNh2B57ll1BCCjC5O3kRgJkQfU9/view?usp=sharing)
-- [Frontend (Parte2)](https://drive.google.com/file/d/1P9CkRhzrIPvSnUomBX8T_t8xVgCqJGGQ/view?usp=sharing)
+
